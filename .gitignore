@@ -1,0 +1,31 @@
+# ---- 构建与运行产物 ----
+__pycache__/
+*.pyc
+*.pyo
+build/
+dist/
+out/
+tmp/
+*.spec
+venv/
+.venv/
+logs/
+*.log
+
+# ---- 运行时临时物 ----
+*.rc-part
+*.rc-sbx-*
+*.rc-bak-*
+*.rc-part.*
+*.rc-sbx-*
+.rc-sbx-owner
+
+# ---- 通用 ----
+Thumbs.db
+.DS_Store
+
+# ---- 例外：内置的 UnRAR 必须入库（RAR 解压依赖它）----
+!src/bin/UnRAR.exe
+
+# 本地笔记，不入公开仓
+HANDOVER.md

@@ -1,0 +1,13 @@
+# 统一换行符：Windows 编辑、仓库锁 LF（源码与文档）
+* text=auto eol=lf
+*.py   text eol=lf
+*.md   text eol=lf
+*.txt  text eol=lf
+*.json text eol=lf
+*.yml  text eol=lf
+
+# 二进制
+*.exe  binary
+*.ico  binary
+*.png  binary
+*.jpg  binary

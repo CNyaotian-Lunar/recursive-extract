@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="880" viewBox="0 0 1240 880" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', 'PingFang SC', sans-serif">
+  <defs>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#58a6ff"/>
+    </marker>
+    <marker id="arw2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8b949e"/>
+    </marker>
+  </defs>
+
+  <rect width="1240" height="880" fill="#0d1117"/>
+
+  <text x="48" y="58" font-size="27" font-weight="600" fill="#e6edf3">递归解压 · 处理流程</text>
+  <text x="48" y="86" font-size="13.5" fill="#8b949e">选一个文件夹 → 里面所有压缩包（含包中包）逐个解开 · 每个包的六步都在私有沙箱里走，路径安全与覆盖策略对所有格式统一生效</text>
+  <line x1="48" y1="106" x2="1192" y2="106" stroke="#21262d" stroke-width="1"/>
+
+  <text x="48"  y="140" font-size="14" font-weight="600" fill="#58a6ff" letter-spacing="1">输入与扫描</text>
+  <text x="396" y="140" font-size="14" font-weight="600" fill="#58a6ff" letter-spacing="1">每个压缩包的六步流水（N 路并行）</text>
+  <text x="914" y="140" font-size="14" font-weight="600" fill="#58a6ff" letter-spacing="1">产出与保护</text>
+
+  <!-- 列 1 -->
+  <g>
+    <rect x="48" y="158" width="300" height="76" rx="9" fill="#161b22" stroke="#30363d"/>
+    <text x="68" y="188" font-size="15.5" font-weight="600" fill="#e6edf3">任意文件夹</text>
+    <text x="68" y="211" font-size="12.5" fill="#8b949e">有多少压缩包、藏得多深都不知道</text>
+
+    <rect x="48" y="252" width="300" height="76" rx="9" fill="#161b22" stroke="#30363d"/>
+    <text x="68" y="282" font-size="15.5" font-weight="600" fill="#e6edf3">格式识别（文件头魔数）</text>
+    <text x="68" y="305" font-size="12.5" fill="#8b949e">后缀只用来推目录名，写错也能解</text>
+
+    <rect x="48" y="346" width="300" height="76" rx="9" fill="#161b22" stroke="#30363d"/>
+    <text x="68" y="376" font-size="15.5" font-weight="600" fill="#e6edf3">任务队列</text>
+    <text x="68" y="399" font-size="12.5" fill="#8b949e">递归发现的包重新入队（嵌套层数可设）</text>
+  </g>
+  <line x1="168" y1="234" x2="168" y2="248" stroke="#58a6ff" stroke-width="2" marker-end="url(#arw)"/>
+  <line x1="168" y1="328" x2="168" y2="342" stroke="#58a6ff" stroke-width="2" marker-end="url(#arw)"/>
+  <line x1="348" y1="384" x2="392" y2="384" stroke="#58a6ff" stroke-width="2" marker-end="url(#arw)"/>
+
+  <!-- 列 2：六步 -->
+  <g>
+    <rect x="396" y="158" width="470" height="62" rx="9" fill="#161b22" stroke="#30363d"/>
+    <circle cx="422" cy="189" r="12" fill="#1f6feb"/><text x="422" y="194" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">1</text>
+    <text x="446" y="185" font-size="14.5" font-weight="600" fill="#e6edf3">压缩炸弹预检</text>
+    <text x="446" y="205" font-size="12" fill="#8b949e">条目数 / 声明总大小 / 压缩比 三重闸门</text>
+
+    <rect x="396" y="232" width="470" height="62" rx="9" fill="#161b22" stroke="#30363d"/>
+    <circle cx="422" cy="263" r="12" fill="#1f6feb"/><text x="422" y="268" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">2</text>
+    <text x="446" y="259" font-size="14.5" font-weight="600" fill="#e6edf3">解到本包私有沙箱</text>
+    <text x="446" y="279" font-size="12" fill="#8b949e">.rc-sbx-&lt;pid&gt;-* · UnRAR / 7z / bsdtar / 内置库</text>
+
+    <rect x="396" y="306" width="470" height="62" rx="9" fill="#161b22" stroke="#30363d"/>
+    <circle cx="422" cy="337" r="12" fill="#1f6feb"/><text x="422" y="342" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">3</text>
+    <text x="446" y="333" font-size="14.5" font-weight="600" fill="#e6edf3">逐条搬移进目标目录</text>
+    <text x="446" y="353" font-size="12" fill="#8b949e">sanitize_rel → safe_join(realpath) → 覆盖策略 → os.replace</text>
+
+    <rect x="396" y="380" width="470" height="62" rx="9" fill="#161b22" stroke="#30363d"/>
+    <circle cx="422" cy="411" r="12" fill="#1f6feb"/><text x="422" y="416" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">4</text>
+    <text x="446" y="407" font-size="14.5" font-weight="600" fill="#e6edf3">智能剥离顶层目录</text>
+    <text x="446" y="427" font-size="12" fill="#8b949e">包内只有一层、且与包同名 ⇒ 去掉那一层</text>
+
+    <rect x="396" y="454" width="470" height="62" rx="9" fill="#161b22" stroke="#30363d"/>
+    <circle cx="422" cy="485" r="12" fill="#1f6feb"/><text x="422" y="490" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">5</text>
+    <text x="446" y="481" font-size="14.5" font-weight="600" fill="#e6edf3">按包账本记账</text>
+    <text x="446" y="501" font-size="12" fill="#8b949e">只删本包写的、只统计本包的（并发下不误伤邻居）</text>
+
+    <rect x="396" y="528" width="470" height="62" rx="9" fill="#161b22" stroke="#30363d"/>
+    <circle cx="422" cy="559" r="12" fill="#1f6feb"/><text x="422" y="564" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">6</text>
+    <text x="446" y="555" font-size="14.5" font-weight="600" fill="#e6edf3">逐条结算进度</text>
+    <text x="446" y="575" font-size="12" fill="#8b949e">总体条 + 当前文件条 + 每路槽位，实时推进</text>
+  </g>
+  <line x1="866" y1="384" x2="910" y2="384" stroke="#8b949e" stroke-width="1.6" marker-end="url(#arw2)"/>
+
+  <!-- 列 3 -->
+  <g>
+    <rect x="914" y="158" width="278" height="76" rx="9" fill="#161b22" stroke="#30363d"/>
+    <text x="934" y="188" font-size="15.5" font-weight="600" fill="#e6edf3">输出目录</text>
+    <text x="934" y="211" font-size="12.5" fill="#8b949e">每包一个同名文件夹 / 或全部收进一处</text>
+
+    <rect x="914" y="252" width="278" height="76" rx="9" fill="#161b22" stroke="#30363d"/>
+    <text x="934" y="282" font-size="15.5" font-weight="600" fill="#e6edf3">沙箱与 .rc-part</text>
+    <text x="934" y="305" font-size="12.5" fill="#8b949e">临时物，按标记清扫，不留垃圾</text>
+
+    <rect x="914" y="346" width="278" height="76" rx="9" fill="#161b22" stroke="#30363d"/>
+    <text x="934" y="376" font-size="15.5" font-weight="600" fill="#e6edf3">覆盖前先备份</text>
+    <text x="934" y="399" font-size="12.5" fill="#8b949e">原文件改名 .rc-bak-*，成功删、失败还原</text>
+
+    <rect x="914" y="440" width="278" height="76" rx="9" fill="#161b22" stroke="#30363d" stroke-dasharray="5 4"/>
+    <text x="934" y="470" font-size="15.5" font-weight="600" fill="#e6edf3">删源包（可选）</text>
+    <text x="934" y="493" font-size="12.5" fill="#8b949e">层层保守闸门：有跳过 / 计数不符 ⇒ 一律不删</text>
+  </g>
+
+  <!-- 底部：安全设计 -->
+  <rect x="48" y="626" width="1144" height="204" rx="10" fill="#0f141b" stroke="#21262d"/>
+  <text x="72" y="660" font-size="14" font-weight="600" fill="#58a6ff" letter-spacing="1">为什么这么设计</text>
+
+  <circle cx="80" cy="692" r="4" fill="#58a6ff"/>
+  <text x="96" y="697" font-size="13" fill="#c9d1d9">沙箱通道 —— 外部解压工具先解到本包私有暂存目录，再逐条经路径清洗搬进目标；覆盖策略因此对所有格式统一生效。</text>
+
+  <circle cx="80" cy="726" r="4" fill="#58a6ff"/>
+  <text x="96" y="731" font-size="13" fill="#c9d1d9">路径穿越防护 —— sanitize_rel + safe_join(realpath) 双重校验；realpath 是性能热点也刻意不缓存（缓存会削弱 TOCTOU 防护）。</text>
+
+  <circle cx="80" cy="760" r="4" fill="#58a6ff"/>
+  <text x="96" y="765" font-size="13" fill="#c9d1d9">只读不执行 —— .exe 自解压外壳一律当数据处理，程序不会运行包内任何可执行文件。</text>
+
+  <circle cx="80" cy="794" r="4" fill="#58a6ff"/>
+  <text x="96" y="799" font-size="13" fill="#c9d1d9">写盘原子化 —— 单文件先写同目录 .rc-part 再原子替换；账本只认本包写的文件，中断与并发都不会留下半个文件。</text>
+</svg>
